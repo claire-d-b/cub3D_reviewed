@@ -146,13 +146,13 @@ unsigned int	rgb3(unsigned int r, unsigned int g, unsigned int b)
 unsigned int	find_color(t_player *player)
 {
     if (fabs((int)player->w - player->w) > 0.0 && fabs((int)player->w - player->w) < 0.01 && fabs((int)player->h - player->h) >= 0.01 && fabs((int)player->h - player->h) < 1.0)
+	    return rgb3(0, 255, 255);
+    if (fabs((int)player->h - player->h) > 0.0 && fabs((int)player->h - player->h) < 0.01 && fabs((int)player->w - player->w) >= 0.01 && fabs((int)player->w - player->w) < 1.0)
 	    return rgb3(0, 102, 255);
-    else if (fabs((int)player->h - player->h) > 0.0 && fabs((int)player->h - player->h) < 0.01 && fabs((int)player->w - player->w) >= 0.01 && fabs((int)player->w - player->w) < 1.0)
-	    return rgb3(153, 204, 255);
-    else if (fabs((int)player->w - player->w) >= 0.01 && fabs((int)player->w - player->w) < 1.0 && fabs((int)player->h - player->h) >= 0.01 && fabs((int)player->h - player->h) < 1.0)
-	    return rgb3(204, 204, 255);
-    else if (fabs((int)player->w - player->w) > 0.0 && fabs((int)player->w - player->w) <= 0.01 && fabs((int)player->h - player->h) > 0.0 && fabs((int)player->h - player->h) <= 0.01)
-	    return rgb3(102, 153, 255);
+    if (fabs((int)player->h - player->h) > 0.99 && fabs((int)player->h - player->h) <= 1.0 && fabs((int)player->w - player->w) > 0.01 && fabs((int)player->w - player->w) <= 1.0)
+	    return rgb3(255, 153, 255);
+    if (fabs((int)player->h - player->h) > 0.01 && fabs((int)player->h - player->h) <= 1.0 && fabs((int)player->w - player->w) > 0.99 && fabs((int)player->w - player->w) <= 1.0)
+	    return rgb3(102, 255, 153);
     return rgb3(0, 0, 0);
 }
 
