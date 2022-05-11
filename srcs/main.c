@@ -114,6 +114,8 @@ void init_struct_player(t_player *player)
     player->mlx_ptr =  NULL;
     player->mlx_win = NULL;
     player->img_ptr = NULL;
+    player->w = 0;
+    player->h = 0;
 }
 
 float raymarch(float i, float j, float angle, char **map, t_player *player)
@@ -123,17 +125,35 @@ float raymarch(float i, float j, float angle, char **map, t_player *player)
     {
         d += 0.01;
     }
+    player->w = i + sin(angle) * d;
+    player->h = j + cos(angle) * d;
     return d * cos(fabs(angle - player->teta));
 }
 
 void texture(char *image, float i, float j, unsigned int color)
 {
     image[(int)(((j * (WIDTH) * 4) + (i * 4)))] = color;
+    image[(int)(((j * (WIDTH) * 4) + (i * 4) + 1))] = color / 256;
+    image[(int)(((j * (WIDTH) * 4) + (i * 4) + 2))] = color / (256 * 256);
+    image[(int)(((j * (WIDTH) * 4) + (i * 4) + 3))] = 1;
 }
 
 unsigned int	rgb3(unsigned int r, unsigned int g, unsigned int b)
 {
 	return (r * 256 * 256) + (g * 256) + b;
+}
+
+unsigned int	find_color(t_player *player)
+{
+    if (fabs((int)player->w - player->w) > 0.0 && fabs((int)player->w - player->w) < 0.01 && fabs((int)player->h - player->h) >= 0.01 && fabs((int)player->h - player->h) < 1.0)
+	    return rgb3(0, 102, 255);
+    else if (fabs((int)player->h - player->h) > 0.0 && fabs((int)player->h - player->h) < 0.01 && fabs((int)player->w - player->w) >= 0.01 && fabs((int)player->w - player->w) < 1.0)
+	    return rgb3(153, 204, 255);
+    else if (fabs((int)player->w - player->w) >= 0.01 && fabs((int)player->w - player->w) < 1.0 && fabs((int)player->h - player->h) >= 0.01 && fabs((int)player->h - player->h) < 1.0)
+	    return rgb3(204, 204, 255);
+    else if (fabs((int)player->w - player->w) > 0.0 && fabs((int)player->w - player->w) <= 0.01 && fabs((int)player->h - player->h) > 0.0 && fabs((int)player->h - player->h) <= 0.01)
+	    return rgb3(102, 153, 255);
+    return rgb3(0, 0, 0);
 }
 
 void draw_walls(char *image, float distance, float wall_height, char **map, t_player *player)
@@ -146,7 +166,7 @@ void draw_walls(char *image, float distance, float wall_height, char **map, t_pl
     {
         float teta = player->teta + FOV / 2 - width_coord * FOV / WIDTH;
         distance = raymarch(player->x, player->y, teta, map, player);
-        wall_height = (WIDTH / 4) / distance;
+        wall_height = (WIDTH / 2) / distance;
         while (height_coord < HEIGHT / 2 - wall_height / 2)
         {
             if (((int)(((height_coord * WIDTH * 4) + (width_coord * 4) + 3))) <= (WIDTH * HEIGHT * 4) && (int)(((height_coord * WIDTH * 4) + (width_coord * 4))) >= 0)
@@ -156,7 +176,7 @@ void draw_walls(char *image, float distance, float wall_height, char **map, t_pl
         while (height_coord < HEIGHT / 2 + wall_height / 2)
         {
             if (((int)(((height_coord * WIDTH * 4) + (width_coord * 4) + 3))) <= (WIDTH * HEIGHT * 4) && (int)(((height_coord * WIDTH * 4) + (width_coord * 4))) >= 0)
-                texture(image, width_coord, height_coord, rgb3(255, 255, 255));
+                texture(image, width_coord, height_coord, find_color(player));
             height_coord++;
         }
         while (height_coord < HEIGHT)

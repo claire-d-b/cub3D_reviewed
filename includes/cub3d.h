@@ -32,6 +32,8 @@ typedef struct  s_player {
     void *mlx_ptr;
     void *mlx_win;
     void *img_ptr;
+    float w;
+    float h;
 }       t_player;
 
 #endif
