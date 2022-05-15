@@ -1,4 +1,4 @@
-#include "cub3d.h"
+#include "cub3d.hpp"
 
 int		find_n(char *buf, size_t size)
 {
@@ -61,7 +61,7 @@ char	*join_a_free(char *s1, char *s2)
 	j = -1;
 	if (!s1 && !s2)
 		return (0);
-	if (!(ptr = malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1))))
+	if (!(ptr = new char[ft_strlen(s1) + ft_strlen(s2) + 1]))
 		return (0);
 	while (s1[++i])
 		ptr[i] = s1[i];
@@ -82,7 +82,7 @@ char	*ft_strjoin(char *s1, char *s2)
 	j = -1;
 	if (!s1 && !s2)
 		return (0);
-	if (!(ptr = malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1))))
+	if (!(ptr = new char[ft_strlen(s1) + ft_strlen(s2) + 1]))
 		return (0);
 	while (s1[++i])
 		ptr[i] = s1[i];

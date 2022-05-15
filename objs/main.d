@@ -1,1 +1,2 @@
-objs/main.o: srcs/main.c includes/cub3d.h includes/../srcs/minilibx/mlx.h
+objs/main.o: srcs/main.cpp includes/cub3d.hpp includes/fixed.hpp \
+  srcs/./minilibx/mlx.h

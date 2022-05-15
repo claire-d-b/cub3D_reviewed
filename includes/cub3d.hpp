@@ -7,7 +7,18 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
-#include "../srcs/minilibx/mlx.h"
+
+# define HEIGHT 800.0f
+# define WIDTH 1000.0f
+# define FOV 1.0471975512f
+# define ROTATION 0.05f
+# define MOVE_RIGHT 100
+# define MOVE_LEFT 97
+# define MOVE_UP 119
+# define MOVE_DOWN 115
+# define LEFT_ARROW 65361
+# define RIGHT_ARROW 65363
+# define PI 3.14159265358979323846f
 
 int				get_next_line(int fd, char **line);
 int		find_n(char *buf, size_t size);
@@ -15,25 +26,5 @@ void	*ft_memmove(void *dst, const void *src, size_t len);
 size_t	ft_strlen(char *str);
 char	*join_a_free(char *s1, char *s2);
 char	*ft_strjoin(char *s1, char *s2);
-
-
-typedef struct  s_player {
-    float x;
-    float y;
-    float teta;
-    int move_right;
-    int move_left;
-    int move_up;
-    int move_down;
-    int camera_left;
-    int camera_right;
-    char *image;
-    char **map;
-    void *mlx_ptr;
-    void *mlx_win;
-    void *img_ptr;
-    float w;
-    float h;
-}       t_player;
 
 #endif

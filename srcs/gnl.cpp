@@ -1,4 +1,4 @@
-#include "cub3d.h"
+#include "cub3d.hpp"
 
 #define BUFFER_SIZE 50
 
@@ -33,7 +33,7 @@ static char		*ft_create_a_clear_left(char *left, char *buf, size_t size)
 	}
 	else
 	{
-		if (!(left = malloc(sizeof(char) * (size + 1))))
+		if (!(left = new char[size + 1]))
 			return (0);
 		left[0] = '\0';
 		return (left);
@@ -47,7 +47,7 @@ int				get_next_line(int fd, char **line)
 	static char *left;
 
 	left = (!left) ? ft_create_a_clear_left(left, buf, BUFFER_SIZE) : left;
-	line[0] = ft_strjoin(left, "");
+	line[0] = ft_strjoin(left, const_cast<char *>(""));
 	ft_create_a_clear_left(left, buf, BUFFER_SIZE);
 	if (find_n(line[0], ft_strlen(line[0])) != -1)
 	{

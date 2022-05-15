@@ -1,15 +1,6 @@
-#include "cub3d.h"
-
-#define HEIGHT 800.0f
-#define WIDTH 1000.0f
-#define FOV 1.0471975512f
-#define ROTATION 0.05f
-# define MOVE_RIGHT 100
-# define MOVE_LEFT 97
-# define MOVE_UP 119
-# define MOVE_DOWN 115
-# define LEFT_ARROW 65361
-# define RIGHT_ARROW 65363
+#include "cub3d.hpp"
+#include "fixed.hpp"
+#include "./minilibx/mlx.h"
 
 void walk(t_player *player)
 {
@@ -18,32 +9,32 @@ void walk(t_player *player)
     {
         if (player->map[(int)(player->x - sin(player->teta) * dist)][(int)(player->y + cos(player->teta) * dist)] != '1')
         {
-            player->y += sin(player->teta) * dist;
-            player->x += -cos(player->teta) * dist;
+            player->y = player->y + sin(player->teta) * dist;
+            player->x = player->x + -cos(player->teta) * dist;
         }
     }
     if (player->move_left == 1)
     {
         if (player->map[(int)(player->x + sin(player->teta) * dist)][(int)(player->y - cos(player->teta) * dist)] != '1')
         {
-            player->y += -sin(player->teta) * dist;
-            player->x += cos(player->teta) * dist;
+            player->y = player->y + -sin(player->teta) * dist;
+            player->x = player->x + cos(player->teta) * dist;
         }
     }
     if (player->move_up == 1)
     {
         if (player->map[(int)(player->x - sin(player->teta) * dist)][(int)(player->y - cos(player->teta) * dist)] != '1')
         {
-            player->y += -cos(player->teta) * dist;
-            player->x += -sin(player->teta) * dist;
+            player->y = player->y +  -cos(player->teta) * dist;
+            player->x = player->x + -sin(player->teta) * dist;
         }
     }
     if (player->move_down == 1)
     {
         if (player->map[(int)(player->x + sin(player->teta) * dist)][(int)(player->y + cos(player->teta) * dist)] != '1')
         {
-            player->y += cos(player->teta) * dist;
-            player->x += sin(player->teta) * dist;
+            player->y = player->y + cos(player->teta) * dist;
+            player->x = player->x + sin(player->teta) * dist;
         }
     }
 }
@@ -52,15 +43,15 @@ void camera(t_player *player, int key)
 {
     if (key == 1)
     {
-        if ((int)player->teta <= (int)-M_PI)
-		    player->teta = M_PI;
-	    player->teta -= ROTATION;
+        if ((int)player->teta <= (int)-PI)
+		    player->teta = PI;
+	    player->teta = player->teta - ROTATION;
     }
     else
     {
-        if ((int)player->teta >= (int)M_PI)
-            player->teta = -M_PI;
-        player->teta += ROTATION;
+        if ((int)player->teta >= (int)PI)
+            player->teta = -PI;
+        player->teta = player->teta + ROTATION;
     }
 }
 
@@ -102,7 +93,7 @@ void init_struct_player(t_player *player)
 {
     player->x = 7.0f;
     player->y = 7.0f;
-    player->teta = M_PI / 4;
+    player->teta = PI / 4;
     player->move_right = 0;
     player->move_left = 0;
     player->move_up = 0;
@@ -114,23 +105,23 @@ void init_struct_player(t_player *player)
     player->mlx_ptr =  NULL;
     player->mlx_win = NULL;
     player->img_ptr = NULL;
-    player->w = 0;
-    player->h = 0;
+    player->w = 0.0f;
+    player->h = 0.0f;
 }
 
 float raymarch(float i, float j, float angle, char **map, t_player *player)
 {
-    float d = 0.01;
-    while ((int)(i + sin(angle) * d) < 11 && (int)(j + cos(angle) * d) < 9 && map[(int)(i + sin(angle) * d)][(int)(j + cos(angle) * d)] != '1')
+    float d = 0.01f;
+    while ((i + sin(angle) * d) < 11 && (j + cos(angle) * d) < 9 && map[(int)(i + sin(angle) * d)][(int)(j + cos(angle) * d)] != '1')
     {
-        d += 0.01;
+        d += 0.01f;
     }
     player->w = i + sin(angle) * d;
     player->h = j + cos(angle) * d;
     return d * cos(fabs(angle - player->teta));
 }
 
-void texture(char *image, float i, float j, unsigned int color)
+void texture(char *image, int i, int j, unsigned int color)
 {
     image[(int)(((j * (WIDTH) * 4) + (i * 4)))] = color;
     image[(int)(((j * (WIDTH) * 4) + (i * 4) + 1))] = color / 256;
@@ -156,30 +147,33 @@ unsigned int	find_color(t_player *player)
     return rgb3(0, 0, 0);
 }
 
-void draw_walls(char *image, float distance, float wall_height, char **map, t_player *player)
+void draw_walls(char *image, float distance, Fixed wall_height, char **map, t_player *player)
 {
-    float height_coord = 0;
-    float width_coord = 0;
+    int height_coord = 0;
+    int width_coord = 0;
     wall_height = 0;
 
-    while (width_coord < WIDTH)
+    while (width_coord < (int)WIDTH)
     {
-        float teta = player->teta + FOV / 2 - width_coord * FOV / WIDTH;
+        float teta(player->teta + FOV / 2 - width_coord * FOV / WIDTH);
         distance = raymarch(player->x, player->y, teta, map, player);
-        wall_height = (WIDTH / 2) / distance;
-        while (height_coord < HEIGHT / 2 - wall_height / 2)
+        wall_height = Fixed((WIDTH / 2) / distance);
+        // printf("wall height %f\n", wall_height);
+        while (height_coord < (int)(HEIGHT / 2 - wall_height.toFloat() / 2))
         {
             if (((int)(((height_coord * WIDTH * 4) + (width_coord * 4) + 3))) <= (WIDTH * HEIGHT * 4) && (int)(((height_coord * WIDTH * 4) + (width_coord * 4))) >= 0)
                 texture(image, width_coord, height_coord, rgb3(0, 0, 0));
             height_coord++;
+            // printf("a");
         }
-        while (height_coord < HEIGHT / 2 + wall_height / 2)
+        while (height_coord < (int)(HEIGHT / 2 + wall_height.toFloat() / 2))
         {
             if (((int)(((height_coord * WIDTH * 4) + (width_coord * 4) + 3))) <= (WIDTH * HEIGHT * 4) && (int)(((height_coord * WIDTH * 4) + (width_coord * 4))) >= 0)
                 texture(image, width_coord, height_coord, find_color(player));
             height_coord++;
+            // printf("b");
         }
-        while (height_coord < HEIGHT)
+        while (height_coord < (int)(HEIGHT))
         {
             if (((int)(((height_coord * WIDTH * 4) + (width_coord * 4) + 3))) <= (WIDTH * HEIGHT * 4) && (int)(((height_coord * WIDTH * 4) + (width_coord * 4))) >= 0)
                 texture(image, width_coord, height_coord, rgb3(0, 0, 0));
@@ -199,53 +193,6 @@ int moves(t_player *player)
         camera(player, 0);
     if (player->camera_right)
         camera(player, 1);
-    draw_walls(player->image, 0, 0, player->map, player);
-    return 0;
-}
-
-int main (int ac, char **av)
-{
-    (void)ac;
-    (void)av;
-    char *line;
-    int fd = 0;
-    int i = 0;
-    int x = 0;
-    t_player player;
-
-    init_struct_player(&player);
-    if (!(fd = open("map.cub", O_RDONLY)))
-        return 1;
-    if (!(player.map = malloc(sizeof(char*) * 255)))   
-        return 1;
-    while ((i = get_next_line(fd, &line)))
-    {
-        player.map[x] = strdup(line);
-        printf("%s\n", line);
-        x++;
-    }
-    player.map[x] = strdup(line);
-    player.map[++x] = NULL;
-    char *title = "CUB";
-    int bpp = 0;
-    int size_line = 0;
-    int endian = 0;
-    if (!(player.mlx_ptr = mlx_init()))
-        return 1;
-    if (!(player.mlx_win = mlx_new_window(player.mlx_ptr, WIDTH, HEIGHT, title)))
-        return 1;
-    if (!(player.img_ptr = mlx_new_image(player.mlx_ptr, WIDTH, HEIGHT)))
-        return 1;
-    if (!(player.image = mlx_get_data_addr(player.img_ptr, &bpp, &size_line, &endian)))
-        return 1;
-    // draw_walls(player.image, 0, 0, player.map, &player);
-    // mlx_put_image_to_window(mlx_ptr, mlx_win, img_ptr, 0, 0);
-    mlx_hook(player.mlx_win, 02, 1L << 0, &key_press, &player);
-	mlx_hook(player.mlx_win, 03, 1L << 1, &key_release, &player);
-	// mlx_hook(player->ids.mlx_win, 15, 1L << 16, &minimise, player);
-	// mlx_hook(player->ids.mlx_win, 17, 1L << 17, &exit_game, player);
-    mlx_loop_hook(player.mlx_ptr, &moves, &player);
-    mlx_loop(player.mlx_ptr);
-    // draw_walls(player.image, 0, 0, player.map, &player);
+    draw_walls(player->image, 0, Fixed(0), player->map, player);
     return 0;
 }
