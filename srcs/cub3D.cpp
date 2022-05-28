@@ -2,39 +2,58 @@
 #include "fixed.hpp"
 #include "./minilibx/mlx.h"
 
+int hit_walls(float i, float j, t_player *player)
+{
+    if (player->map[(int)i][(int)j] == '1')
+        return 1;
+    return 0;
+}
+
 void walk(t_player *player)
 {
-    float dist = 0.25f;
+    float dist = 0.50f;
     if (player->move_right == 1)
     {
         if (player->map[(int)(player->x - sin(player->teta) * dist)][(int)(player->y + cos(player->teta) * dist)] != '1')
         {
-            player->y = player->y + sin(player->teta) * dist;
-            player->x = player->x + -cos(player->teta) * dist;
+            if (!hit_walls(player->x + -cos(player->teta) * dist, player->y + sin(player->teta) * dist, player))
+            {
+                player->y = player->y + sin(player->teta) * dist;
+                player->x = player->x + -cos(player->teta) * dist;
+            }
         }
     }
     if (player->move_left == 1)
     {
         if (player->map[(int)(player->x + sin(player->teta) * dist)][(int)(player->y - cos(player->teta) * dist)] != '1')
         {
-            player->y = player->y + -sin(player->teta) * dist;
-            player->x = player->x + cos(player->teta) * dist;
+            if (!hit_walls(player->x + cos(player->teta) * dist, player->y + -sin(player->teta) * dist, player))
+            {
+                player->y = player->y + -sin(player->teta) * dist;
+                player->x = player->x + cos(player->teta) * dist;
+            }
         }
     }
     if (player->move_up == 1)
     {
         if (player->map[(int)(player->x - sin(player->teta) * dist)][(int)(player->y - cos(player->teta) * dist)] != '1')
         {
-            player->y = player->y +  -cos(player->teta) * dist;
-            player->x = player->x + -sin(player->teta) * dist;
+            if (!hit_walls(player->x + -sin(player->teta) * dist, player->y +  -cos(player->teta) * dist, player))
+            {
+                player->y = player->y +  -cos(player->teta) * dist;
+                player->x = player->x + -sin(player->teta) * dist;
+            }
         }
     }
     if (player->move_down == 1)
     {
         if (player->map[(int)(player->x + sin(player->teta) * dist)][(int)(player->y + cos(player->teta) * dist)] != '1')
         {
-            player->y = player->y + cos(player->teta) * dist;
-            player->x = player->x + sin(player->teta) * dist;
+            if (!hit_walls(player->x + sin(player->teta) * dist, player->y + cos(player->teta) * dist, player))
+            {
+                player->y = player->y + cos(player->teta) * dist;
+                player->x = player->x + sin(player->teta) * dist;
+            }
         }
     }
 }
